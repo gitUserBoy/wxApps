@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.will.weiyuekotlin.utils.StatusBarUtil
 import com.wx.app.wxapp.R
 import com.wx.app.wxapp.ui.activity.MainActivity
@@ -21,7 +21,7 @@ import com.wx.app.wxapp.ui.activity.MainActivity
  * @date 2018/7/18/018
 
  */
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : RxAppCompatActivity() {
     val TAG: String = javaClass.simpleName + " "
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

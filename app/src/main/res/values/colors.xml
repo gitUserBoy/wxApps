@@ -10,6 +10,13 @@
     <color name="statusBar">#BDBDBD</color>
     <color name="tvUrlColor">#3c3c3c</color>
 
-    <color name="bg_tv_splash">#44000000</color>
+    <color name="bg_tv_splash">#88000000</color>
     <color name="text_splash">#77FFFFFF</color>
+
+    <color name="nv_btn_main">#64B6D1</color>
+    <color name="nv_bg_main">#F68E54</color>
+
+    <color name="bar_transparent_main">#00000000</color>
+
+    <color name="nv_bg_toolbar">#22FFFFFF</color>
 </resources>

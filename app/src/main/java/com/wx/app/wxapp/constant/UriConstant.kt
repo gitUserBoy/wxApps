@@ -11,8 +11,6 @@ package com.wx.app.wxapp.constant
  * @date 2018/7/18/018
 
  */
-interface UriConstant {
-    companion object {
-        val BASE_URL:String = " "
-    }
+object UriConstant {
+    const val BASE_URL: String = "http://baobab.kaiyanapp.com/api/"
 }

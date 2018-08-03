@@ -21,7 +21,7 @@ import com.wx.app.wxapp.widget.view.MultipleStatusView
  */
 abstract class BaseFragment : Fragment() {
     lateinit var view: ViewGroup
-    var multipleStatusView: MultipleStatusView? = null
+    lateinit var multipleStatusView: MultipleStatusView
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         view = inflater.inflate(layoutId(), container, false) as ViewGroup
         return view
@@ -35,7 +35,7 @@ abstract class BaseFragment : Fragment() {
     }
 
     abstract fun layoutId(): Int
-    abstract fun statusViewId(): MultipleStatusView?
+    abstract fun statusViewId(): MultipleStatusView
     abstract fun initData()
     abstract fun initView()
 }

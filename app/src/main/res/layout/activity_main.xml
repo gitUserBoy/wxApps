@@ -14,30 +14,23 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
-
-        <FrameLayout
-            android:id="@+id/fl_container"
+        <com.wx.app.wxapp.widget.view.NoScrollViewPager
+            android:id="@+id/vp_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             >
-        </FrameLayout>
+        </com.wx.app.wxapp.widget.view.NoScrollViewPager>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#000"
-            />
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_button"
+        <com.ashokvarma.bottomnavigation.BottomNavigationBar
+            android:id="@+id/bottom_navigation_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabGravity="fill"
-            app:tabIndicatorHeight="0dp"
-            app:tabMode="fixed"
-            app:tabSelectedTextColor="@color/colorPrimary"
-            >
-        </android.support.design.widget.TabLayout>
+            android:layout_gravity="bottom"
+            app:bnbActiveColor="@color/nv_btn_main"
+            app:bnbBackgroundColor="@color/nv_bg_main"
+            app:bnbMode="mode_shifting"
+            app:bnbBackgroundStyle="background_style_ripple"/>
     </LinearLayout>
     <!--侧边栏-->
     <android.support.design.widget.NavigationView

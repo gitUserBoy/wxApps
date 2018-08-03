@@ -1,5 +1,8 @@
 package com.wx.app.wxapp.mvp.view
 
+import com.wx.app.wxapp.mvp.constract.BaseContract
+
+
 /**
 
  * 描述：
@@ -8,9 +11,7 @@ package com.wx.app.wxapp.mvp.view
 
  * @author wx
 
- * @date 2018/7/27/027
+ * @date 2018/7/31/031
 
  */
-interface BaseView {
-
-}
+ interface BaseView : BaseContract.BaseView

@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <TextView
+
+    <com.wx.app.wxapp.widget.view.MultipleStatusView
+        android:id="@+id/vw_multiple"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Recreation"
-        />
+        app:emptyView="@layout/view_empty"
+        app:errorView="@layout/view_error"
+        app:loadingView="@layout/view_loading"
+        app:noNetworkView="@layout/view_no_net">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Recreation"
+            />
+    </com.wx.app.wxapp.widget.view.MultipleStatusView>
 </LinearLayout>
