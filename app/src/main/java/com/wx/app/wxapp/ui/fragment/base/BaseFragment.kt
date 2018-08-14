@@ -27,15 +27,17 @@ abstract class BaseFragment : Fragment() {
         return view
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         multipleStatusView = statusViewId()
         initData()
         initView()
+        initEvent()
     }
 
     abstract fun layoutId(): Int
     abstract fun statusViewId(): MultipleStatusView
     abstract fun initData()
     abstract fun initView()
+    abstract fun initEvent()
 }

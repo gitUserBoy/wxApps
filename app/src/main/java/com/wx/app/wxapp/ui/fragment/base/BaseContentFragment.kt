@@ -14,6 +14,9 @@ import com.wx.app.wxapp.mvp.presenter.`interface`.BasePresenter
 
  */
 abstract class BaseContentFragment<T : BasePresenter> : BaseFragment(){
+//    @Inject
+//    protected val mPresenter: T? = null//by lazy {  createPresenter() }
+
     protected val mPresenter: T by lazy {  createPresenter() }
     abstract fun createPresenter():T
 }

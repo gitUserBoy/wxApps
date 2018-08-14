@@ -1,7 +1,7 @@
 package com.wx.app.wxapp.mvp.presenter
 
-import com.wx.app.wxapp.bean.HomeContentBean
 import com.wx.app.wxapp.mvp.module.HomeModuleImpl
+import com.wx.app.wxapp.mvp.presenter.`interface`.HomePresenter
 import com.wx.app.wxapp.mvp.view.HomeView
 
 /**
@@ -15,14 +15,8 @@ import com.wx.app.wxapp.mvp.view.HomeView
  * @date 2018/7/31/031
 
  */
-class HomePresenter(v: HomeView, m: HomeModuleImpl) : BasePresenterImpl<HomeView, HomeModuleImpl>(v, m) {
-    override fun showLoading() {
-    }
-
-    override fun dismissLoading() {
-    }
-
-    fun loadData(num: Int) {
+class HomePresenterImpl(v: HomeView, m: HomeModuleImpl) : HomePresenter, BasePresenterImpl<HomeView, HomeModuleImpl>(v, m) {
+    override fun loadData(num: Int) {
         view!!.showLoading()
         addSubscribe(module!!.getHomeBannerDisposable(num)
                 .subscribe({ homeBean ->
@@ -45,13 +39,5 @@ class HomePresenter(v: HomeView, m: HomeModuleImpl) : BasePresenterImpl<HomeView
                     view!!.loadFinish()
                 }))
 
-    }
-
-    fun showRvList() {
-        var rv = ArrayList<HomeContentBean>()
-        for (i in 0..5) {
-            rv.add(HomeContentBean("名字-$i"))
-        }
-        view!!.showRvList(rv)
     }
 }

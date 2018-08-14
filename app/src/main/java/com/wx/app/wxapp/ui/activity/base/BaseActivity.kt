@@ -1,13 +1,11 @@
 package com.wx.app.wxapp.ui.activity.base
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.will.weiyuekotlin.utils.StatusBarUtil
 import com.wx.app.wxapp.R
-import com.wx.app.wxapp.ui.activity.MainActivity
 
 
 /**
@@ -42,8 +40,8 @@ abstract class BaseActivity : RxAppCompatActivity() {
         fragmentTransaction.replace(viewId, fragment)
     }
 
-    fun toActivity(context: Context, clazz: Class<MainActivity>, finish: Boolean) {
-        val intent = Intent(context, clazz)
+    //统一处理
+    open fun toActivity(intent: Intent, finish: Boolean) {
         startActivity(intent)
         if (finish) {
             finish()

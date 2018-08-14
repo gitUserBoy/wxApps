@@ -19,7 +19,9 @@ import kotlinx.android.synthetic.main.item_home_banner.view.*
  */
 class HomeBannerAdapter(layoutId: Int, data: ArrayList<HomeBean.Issue.Item>?) : BaseQuickAdapter<HomeBean.Issue.Item, BaseViewHolder>(layoutId, data) {
     override fun convert(helper: BaseViewHolder, item: HomeBean.Issue.Item) {
+//        var param = helper.itemView.cv_card.layoutParams as LinearLayout.LayoutParams // getStatusBarHeight(mContext)
+//        param.topMargin= getStatusBarHeight(mContext)
+//        helper.itemView.cv_card.layoutParams = param
         ImageLoaderUtil.LoadImage(mContext,item.data!!.cover.detail,helper.itemView.iv_banner)
-
     }
 }

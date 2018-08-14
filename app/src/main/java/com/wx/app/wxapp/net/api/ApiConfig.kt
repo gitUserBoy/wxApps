@@ -83,17 +83,18 @@ object ApiConfig {
 
   /*  ------------------其他相关视频---------------------------------*/
     /**
+     * http://baobab.kaiyanapp.com/api/v2/feed?num=1
      * 首页banner  : v2/feed?num=1
      */
     const val HOME_BANNER = "v2/feed?"
 
     /**
-     *  根据item id获取相关视频  : v4/video/related?id=1
+     *  根据item id获取相关视频  : http://baobab.kaiyanapp.com/api/v4/video/related?id=1
      */
     const val HOME_LIST = "v4/video/related?"
 
     /**
-     * 获取分类Category  : v4/categories
+     * 获取分类Category  : http://baobab.kaiyanapp.com/api/v4/categories
      */
     const val CATEGORIES = "v4/categories"
     /**
@@ -120,5 +121,16 @@ object ApiConfig {
      * 关注 v4/tabs/follow
      */
     const val FOLLOW = "v4/tabs/follow"
+//
+//
+//    val sIFengApi = "http://api.iclient.ifeng.com/"
+//
+//    val sJanDanApi = "http://i.jandan.net/"
+//
+//    val sGetNewsImagesApi = "NewRelativeVideoList"
+//
+//    val sGetNewsArticleCmppApi = "http://api.3g.ifeng.com/"
+//
+//    val sGetNewsArticleDocCmppApi = "ipadtestdoc"
 
 }

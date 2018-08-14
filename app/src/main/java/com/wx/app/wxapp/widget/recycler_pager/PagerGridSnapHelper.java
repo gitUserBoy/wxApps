@@ -74,7 +74,12 @@ public class PagerGridSnapHelper extends SnapHelper {
       PagerGridLayoutManager manager = (PagerGridLayoutManager) layoutManager;
       offset = manager.getSnapOffset(pos);
     }
-    return offset;
+
+    if (mNoNeedToScroll) {
+      return new int[]{0, 0};
+    } else {
+      return offset;
+    }
   }
 
   /**
@@ -202,4 +207,6 @@ public class PagerGridSnapHelper extends SnapHelper {
   public void setFlingThreshold(int threshold) {
     PagerConfig.setFlingThreshold(threshold);
   }
+
+  public boolean mNoNeedToScroll = false;
 }

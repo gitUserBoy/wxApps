@@ -33,7 +33,7 @@ object RetrofitManager {
     val apiService: ApiService by lazy { getRetrofit()!!.create(ApiService::class.java) }
     private var token: String = ""
 
-    fun addHeaderInterceptor(): Interceptor {
+    private fun addHeaderInterceptor(): Interceptor {
         return Interceptor { chain ->
             val request = chain.request()
 
@@ -44,7 +44,7 @@ object RetrofitManager {
         }
     }
 
-    fun addQueryParameterInterceptor(): Interceptor {
+    private fun addQueryParameterInterceptor(): Interceptor {
         return Interceptor { chain ->
             val request = chain.request()
 

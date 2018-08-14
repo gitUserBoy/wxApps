@@ -14,7 +14,7 @@ import com.wx.app.wxapp.mvp.constract.BaseContract
 
  */
 interface BasePresenter: BaseContract.BasePresenter{
-    fun showLoading()
-
-    fun dismissLoading()
+//    fun showLoading()
+//
+//    fun dismissLoading()
 }

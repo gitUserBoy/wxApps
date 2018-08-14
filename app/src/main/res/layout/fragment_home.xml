@@ -1,49 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     >
+
     <com.wx.app.wxapp.widget.view.MultipleStatusView
         android:id="@+id/vw_multiple"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:emptyView="@layout/view_empty"
         app:errorView="@layout/view_error"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:loadingView="@layout/view_loading"
-        app:noNetworkView="@layout/view_no_net">
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rc_main_list"
+        app:noNetworkView="@layout/view_no_net"
+        >
+
+        <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/rc_main_banner">
-        </android.support.v7.widget.RecyclerView>
+            >
 
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/ab_home"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.CollapsingToolbarLayout
+                    android:id="@+id/collapsing_toolbar_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:contentScrim="#30469b"
+                    app:expandedTitleMarginStart="48dp"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:background="@color/colorAccent"
+                        app:layout_collapseMode="parallax"
+                        app:layout_collapseParallaxMultiplier="0.7"
+                        >
+                    </FrameLayout>
+
+                    <android.support.v7.widget.Toolbar
+                        android:id="@+id/tb_home_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/bar_transparent_main"
+                        app:layout_collapseMode="pin"
+                        app:navigationIcon="@mipmap/ic_launcher"
+                        >
+                    </android.support.v7.widget.Toolbar>
+                </android.support.design.widget.CollapsingToolbarLayout>
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tl_scroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    app:tabIndicatorHeight="1dp"
+                    app:tabMode="scrollable"
+                    app:tabSelectedTextColor="@color/colorAccent"
+                    app:tabTextColor="@android:color/darker_gray"
+
+                    >
+                </android.support.design.widget.TabLayout>
+            </android.support.design.widget.AppBarLayout>
+
+            <com.wx.app.wxapp.widget.view.NoScrollViewPager
+                android:id="@+id/vp_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                >
+            </com.wx.app.wxapp.widget.view.NoScrollViewPager>
+        </android.support.design.widget.CoordinatorLayout>
     </com.wx.app.wxapp.widget.view.MultipleStatusView>
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/nv_bg_toolbar"
-        app:contentInsetStart="0dp">
-
-        <RelativeLayout
-            android:id="@+id/rel_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/tv_header_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
-
-    </android.support.v7.widget.Toolbar>
-</FrameLayout>
+</LinearLayout>

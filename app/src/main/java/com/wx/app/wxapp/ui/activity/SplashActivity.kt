@@ -1,5 +1,6 @@
 package com.wx.app.wxapp.ui.activity
 
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -32,7 +33,7 @@ class SplashActivity : BaseActivity() {
     //必应每日壁纸 来源于 https://www.dujin.org/fenxiang/jiaocheng/3618.html.
     private val picUrl = "http://api.dujin.org/bing/1920.php"
 
-    var mCompositeDisposable: CompositeDisposable? = CompositeDisposable()
+    private var mCompositeDisposable: CompositeDisposable? = CompositeDisposable()
     override fun initView() {
         Glide.with(this).load(picUrl)
                 .apply(RequestOptions()
@@ -49,7 +50,7 @@ class SplashActivity : BaseActivity() {
 
                 })
                 .into(iv_bg)
-        tv_time.setOnClickListener { toActivity(this,MainActivity::class.java,true) }
+        tv_time.setOnClickListener { toActivity(Intent(this,MainActivity::class.java),true) }
     }
 
     fun setView(){
@@ -70,7 +71,7 @@ class SplashActivity : BaseActivity() {
     }
     override fun layoutId(): Int = R.layout.activity_splash
 
-    fun getObservable(time: Int): Observable<Int> {
+    private fun getObservable(time: Int): Observable<Int> {
         return Observable.interval(0, 1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .map{t->time - t.toInt()}//t 指的是秒数
@@ -80,7 +81,7 @@ class SplashActivity : BaseActivity() {
 
     fun activity2main() {
         mCompositeDisposable?.dispose()
-        toActivity(this,MainActivity::class.java,true)
+        toActivity(Intent(this,MainActivity::class.java),true)
     }
 
     override fun onDestroy() {

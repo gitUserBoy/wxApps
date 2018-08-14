@@ -42,8 +42,6 @@ class NoScrollViewPager : ViewPager {
         when (arg0.action) {
 
         }
-
-
         return !noScroll && super.onTouchEvent(arg0)
     }
 

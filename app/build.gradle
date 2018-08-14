@@ -24,8 +24,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-
+    dexOptions {
+        javaMaxHeapSize "4g"
+        jumboMode = true
+    }
     //greendao配置
     greendao {
         //版本号，升级时可配置
@@ -33,6 +35,7 @@ android {
         //        daoPackage'tv.silkwave.csclient.db.greendao'
         //        targetGenDir 'src/main/java'
     }
+    buildToolsVersion '26.0.2'
 }
 
 dependencies {
@@ -63,10 +66,9 @@ dependencies {
     compile 'com.umeng.sdk:analytics:7.5.3'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.orhanobut:logger:2.1.1'
-//    compile 'com.zhy:percent-support-extends:1.1.1'
+    //    compile 'com.zhy:percent-support-extends:1.1.1'
     compile 'id.zelory:compressor:2.1.0'
     compile 'com.journeyapps:zxing-android-embedded:3.5.0'
-    compile 'com.android.support:multidex:1.0.1'
     //    compile 'com.journeyapps:zxing-android-embedded:3.6.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
@@ -77,13 +79,13 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     //kotlin 支持库
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //腾讯 bugly
     implementation 'com.tencent.bugly:crashreport:2.6.6.1'
     //运行时权限
     implementation 'me.weyye.hipermission:library:1.0.7'
     // 视屏播放器
-    implementation 'com.shuyu:GSYVideoPlayer:2.1.1'
+    compile 'com.shuyu:GSYVideoPlayer:5.0.2'
     //smartRefreshLayout 下拉刷新
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
@@ -93,14 +95,16 @@ dependencies {
     compile 'com.github.ybq:Android-SpinKit:1.1.0'
     //底部按钮
     compile 'com.ashokvarma.android:bottom-navigation-bar:2.0.4'
-
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.26'
     /* RxLifecycle */
     implementation 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.1'
     implementation 'com.trello.rxlifecycle2:rxlifecycle-kotlin:2.2.1'
     //转场动画
     compile 'me.immortalz:transitionhelper:2.3.4'
-
     //模糊透明 View
     implementation 'com.github.mmin18:realtimeblurview:1.1.0'
+    //dagger2
+    //    compile "com.google.dagger:dagger:2.12"
+    //    compile "com.google.dagger:dagger-android-support:2.12"
+    //    compile "com.google.dagger:dagger-compiler:2.12"
 }

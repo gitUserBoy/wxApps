@@ -17,6 +17,9 @@ import kotlinx.android.synthetic.main.fragment_home.*
 
  */
 class RecreationFragment : BaseFragment() {
+    override fun initEvent() {
+    }
+
     override fun statusViewId(): MultipleStatusView = vw_multiple
     override fun layoutId(): Int = fragment_recreation
 

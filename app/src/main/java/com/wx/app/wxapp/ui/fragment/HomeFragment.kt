@@ -1,29 +1,28 @@
 package com.wx.app.wxapp.ui.fragment
 
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v4.content.ContextCompat
 import android.view.View
-import com.will.weiyuekotlin.utils.StatusBarUtil
 import com.wx.app.wxapp.R
-import com.wx.app.wxapp.R.layout.*
+import com.wx.app.wxapp.R.layout.fragment_home
 import com.wx.app.wxapp.bean.HomeBean
 import com.wx.app.wxapp.bean.HomeContentBean
 import com.wx.app.wxapp.mvp.module.HomeModuleImpl
-import com.wx.app.wxapp.mvp.presenter.HomePresenter
+import com.wx.app.wxapp.mvp.presenter.HomePresenterImpl
+import com.wx.app.wxapp.mvp.presenter.`interface`.HomePresenter
 import com.wx.app.wxapp.mvp.view.HomeView
-import com.wx.app.wxapp.ui.adapter.HomeBannerAdapter
-import com.wx.app.wxapp.ui.adapter.HomeListAdapter
+import com.wx.app.wxapp.ui.adapter.HomeFragmentPagerAdapter
 import com.wx.app.wxapp.ui.fragment.base.BaseContentFragment
-import com.wx.app.wxapp.widget.recycler_pager.PagerGridLayoutManager
-import com.wx.app.wxapp.widget.recycler_pager.PagerGridSnapHelper
+import com.wx.app.wxapp.utils.ScreenUtils
 import com.wx.app.wxapp.widget.view.MultipleStatusView
-import kotlinx.android.synthetic.main.banner_home.view.*
 import kotlinx.android.synthetic.main.fragment_home.*
+
 
 /**
 
  * 描述：
-
- *
+状态栏透明和间距处理
+ *  StatusBarUtil.darkMode(activity)
+StatusBarUtil.setPaddingSmart(activity, toolbar)
 
  * @author wx
 
@@ -31,31 +30,48 @@ import kotlinx.android.synthetic.main.fragment_home.*
 
  */
 class HomeFragment : BaseContentFragment<HomePresenter>(), HomeView {
-    lateinit var banner: View
+    override fun initEvent() {
+        val PENDING_ACTION_NONE = 0x0
+        val PENDING_ACTION_EXPANDED = 0x1
+        val PENDING_ACTION_COLLAPSED = 0x2
+        val PENDING_ACTION_ANIMATE_ENABLED = 0x4
+        val PENDING_ACTION_FORCE = 0x8
+        ab_home.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+
+
+        }
+    }
+
+    private lateinit var banner: View
+
+    private lateinit var tabTitle: ArrayList<String>
 
     override fun initView() {
         mPresenter.attachView()
 
-        mPresenter.showLoading()
+        banner = View.inflate(context, R.layout.banner_home, null)
+        initToolBar()
+    }
 
-        banner = View.inflate(context, R.layout.banner_home,null)
-
-        //状态栏透明和间距处理
-        StatusBarUtil.darkMode(activity)
-        StatusBarUtil.setPaddingSmart(activity, toolbar)
+    private fun initToolBar() {
+        tb_home_title.setPadding(0,ScreenUtils.getStatusBarHeight(context),0,0)
+        tb_home_title.logo = ContextCompat.getDrawable(context!!, R.mipmap.ic_launcher)
     }
 
     override fun showBanner(list: ArrayList<HomeBean.Issue.Item>) {
-        var adapter = HomeBannerAdapter(item_home_banner, list)
-        banner.rc_main_banner.layoutManager = PagerGridLayoutManager(1, 1, PagerGridLayoutManager.HORIZONTAL)
-        banner.rc_main_banner.adapter = adapter
-        val pageSnapHelper = PagerGridSnapHelper()
-        pageSnapHelper.attachToRecyclerView(banner.rc_main_banner)
+//        var adapter = HomeBannerAdapter(item_home_banner, list)
+//        banner.rc_main_banner.layoutManager = PagerGridLayoutManager(1, 1, PagerGridLayoutManager.HORIZONTAL)
+//        val pageSnapHelper = PagerGridSnapHelper()
+//        banner.rc_main_banner.adapter = adapter
+//        pageSnapHelper.attachToRecyclerView(banner.rc_main_banner)
+//
+//        adapter.setOnItemClickListener { adapter, view, position ->
+//        }
     }
 
-    override fun createPresenter(): HomePresenter = HomePresenter(this, HomeModuleImpl())
+    override fun createPresenter(): HomePresenter = HomePresenterImpl(this, HomeModuleImpl())
 
-    override fun showError(msg: String,errorCode:Int) {
+    override fun showError(msg: String, errorCode: Int) {
         multipleStatusView.showEmpty()
     }
 
@@ -83,33 +99,29 @@ class HomeFragment : BaseContentFragment<HomePresenter>(), HomeView {
     override fun initData() {
         mPresenter.loadData(1)
     }
+
     override fun loadData() {
     }
 
     override fun loadFinish() {
-        var list = mutableListOf<HomeContentBean>()
-                for (i in 0..10){
-                    list.add(HomeContentBean("--$i"))
-                }
+        var homeListFragments: ArrayList<HomeListFragment> = ArrayList()
+        for (i in 0..10) {
+            val newTab = tl_scroll.newTab()
+            newTab.text = "--pp---$i"
+            tl_scroll.addTab(newTab)
+            val instance = HomeListFragment.getInstance(i)
+            instance.setParentViewPager(vp_container)
+            homeListFragments.add(instance)
+        }
+        val pagerAdapter = HomeFragmentPagerAdapter(activity!!.supportFragmentManager)
+        vp_container.adapter = pagerAdapter
+        pagerAdapter.addData(homeListFragments)
+        tl_scroll.setupWithViewPager(vp_container)
+        vp_container.setNoScroll(false)
 
-        var adapter2 = HomeListAdapter(item_home_content, list)
-        adapter2.addHeaderView(banner)
-        rc_main_list.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
-        rc_main_list.adapter = adapter2
+        for (i in 0..10) {
+            tl_scroll.getTabAt(i)?.text = "--pp---$i"
+        }
     }
-
-    private fun createData() {
-//        var view = View.inflate(context, banner_home,null)
-//        var adapter = HomeBannerAdapter(item_home_banner, banner)
-//        view.rc_main_banner.layoutManager = PagerGridLayoutManager(1, 1, PagerGridLayoutManager.HORIZONTAL)
-//        view.rc_main_banner.adapter = adapter
-//        val pageSnapHelper = PagerGridSnapHelper()
-//        pageSnapHelper.attachToRecyclerView(view.rc_main_banner)
-//        var adapter2 = HomeListAdapter(item_home_content, banner)
-//        adapter2.addHeaderView(view)
-//        rc_main_list.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
-//        rc_main_list.adapter = adapter2
-    }
-
 
 }

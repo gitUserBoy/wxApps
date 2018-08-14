@@ -2,9 +2,11 @@ package com.wx.app.wxapp.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -112,4 +114,15 @@ public class ScreenUtils {
     return bp;
 
   }
-}  
+  public static int getStatusBarHeight(Context context){
+    int result = 24;
+    int resId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+   if (resId > 0) {
+     result =  context.getResources().getDimensionPixelSize(resId);
+    } else {
+     result = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+              result, Resources.getSystem().getDisplayMetrics());
+    }
+    return result;
+  }
+}
