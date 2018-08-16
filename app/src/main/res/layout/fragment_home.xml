@@ -32,17 +32,23 @@
                     android:id="@+id/collapsing_toolbar_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:contentScrim="#30469b"
+                    app:contentScrim="#FFFFFF"
                     app:expandedTitleMarginStart="48dp"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:background="@color/colorAccent"
                         app:layout_collapseMode="parallax"
                         app:layout_collapseParallaxMultiplier="0.7"
                         >
+                        <ImageView
+                            android:id="@+id/iv_bg"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/leak_canary_icon"
+                            android:scaleType="centerCrop"
+                            />
                     </FrameLayout>
 
                     <android.support.v7.widget.Toolbar

@@ -40,6 +40,8 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/slide_main_header"
         app:menu="@menu/slide_main_menu"
+        android:scrollbars="none"
+        android:overScrollMode="never"
         >
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

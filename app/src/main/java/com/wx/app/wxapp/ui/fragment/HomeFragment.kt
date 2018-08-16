@@ -1,6 +1,5 @@
 package com.wx.app.wxapp.ui.fragment
 
-import android.support.v4.content.ContextCompat
 import android.view.View
 import com.wx.app.wxapp.R
 import com.wx.app.wxapp.R.layout.fragment_home
@@ -12,6 +11,7 @@ import com.wx.app.wxapp.mvp.presenter.`interface`.HomePresenter
 import com.wx.app.wxapp.mvp.view.HomeView
 import com.wx.app.wxapp.ui.adapter.HomeFragmentPagerAdapter
 import com.wx.app.wxapp.ui.fragment.base.BaseContentFragment
+import com.wx.app.wxapp.utils.ImageLoaderUtil
 import com.wx.app.wxapp.utils.ScreenUtils
 import com.wx.app.wxapp.widget.view.MultipleStatusView
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -30,32 +30,34 @@ StatusBarUtil.setPaddingSmart(activity, toolbar)
 
  */
 class HomeFragment : BaseContentFragment<HomePresenter>(), HomeView {
+    override fun loadMoreFinish() {
+    }
+
+    override fun initComponent() {
+    }
+
     override fun initEvent() {
-        val PENDING_ACTION_NONE = 0x0
-        val PENDING_ACTION_EXPANDED = 0x1
-        val PENDING_ACTION_COLLAPSED = 0x2
-        val PENDING_ACTION_ANIMATE_ENABLED = 0x4
-        val PENDING_ACTION_FORCE = 0x8
-        ab_home.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
-
-
-        }
     }
 
     private lateinit var banner: View
 
     private lateinit var tabTitle: ArrayList<String>
+    private val picUrl = "http://api.dujin.org/bing/1920.php"
 
-    override fun initView() {
-        mPresenter.attachView()
-
-        banner = View.inflate(context, R.layout.banner_home, null)
-        initToolBar()
-    }
 
     private fun initToolBar() {
         tb_home_title.setPadding(0,ScreenUtils.getStatusBarHeight(context),0,0)
-        tb_home_title.logo = ContextCompat.getDrawable(context!!, R.mipmap.ic_launcher)
+//        tb_home_title.logo = ContextCompat.getDrawable(context!!, R.mipmap.ic_launcher)
+
+//        Glide.with(this).load(picUrl)
+//                .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)).into(iv_bg)
+        ImageLoaderUtil.LoadImage(context,picUrl,iv_bg)
+    }
+
+    override fun initView() {
+        mPresenter.attachView()
+        banner = View.inflate(context, R.layout.banner_home, null)
+        initToolBar()
     }
 
     override fun showBanner(list: ArrayList<HomeBean.Issue.Item>) {
@@ -76,9 +78,7 @@ class HomeFragment : BaseContentFragment<HomePresenter>(), HomeView {
     }
 
     override fun showLoading() {
-        if (multipleStatusView != null) {
-            multipleStatusView!!.showLoading()
-        }
+            multipleStatusView.showLoading()
     }
 
     override fun dismissLoading() {

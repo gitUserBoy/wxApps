@@ -2,8 +2,7 @@ package com.wx.app.wxapp.ui.adapter
 
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
-import com.wx.app.wxapp.bean.HomeContentBean
-import kotlinx.android.synthetic.main.item_home_content.view.*
+import com.wx.app.wxapp.bean.HomeBean
 
 /**
 
@@ -16,8 +15,8 @@ import kotlinx.android.synthetic.main.item_home_content.view.*
  * @date 2018/7/31/031
 
  */
-class HomeListAdapter(layoutId: Int, data: MutableList<HomeContentBean>?) : BaseQuickAdapter<HomeContentBean, BaseViewHolder>(layoutId, data) {
-    override fun convert(helper: BaseViewHolder, item: HomeContentBean) {
-        helper.itemView.tv_banner_title.text = item.name
+class HomeListAdapter(layoutId: Int, data: MutableList<HomeBean.Issue.Item>?) : BaseQuickAdapter<HomeBean.Issue.Item, BaseViewHolder>(layoutId, data) {
+
+    override fun convert(helper: BaseViewHolder, item: HomeBean.Issue.Item) {
     }
 }

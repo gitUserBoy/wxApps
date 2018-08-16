@@ -21,7 +21,7 @@ abstract class BasePresenterImpl<V : BaseContract.BaseView, M : BaseModuleImpl> 
     var view: V? = null
     var module: M? = null
 
-    private var compositeDisposable = CompositeDisposable()
+     var compositeDisposable = CompositeDisposable()//防止内存泄露
 
     constructor(v: V, m: M) {
         view = v
@@ -35,9 +35,7 @@ abstract class BasePresenterImpl<V : BaseContract.BaseView, M : BaseModuleImpl> 
         view = null
         module = null
 
-        if (compositeDisposable != null) {
-            compositeDisposable.clear()
-        }
+        compositeDisposable.clear()
     }
 
     fun addSubscribe(d: Disposable) {

@@ -15,5 +15,9 @@ import com.wx.app.wxapp.bean.HomeBean
 
  */
 interface HomeListView : BaseView{
-    fun showBanner(list: ArrayList<HomeBean.Issue.Item>)
+    fun showData(list: ArrayList<HomeBean.Issue.Item>)
+
+    fun showContentList(list: ArrayList<HomeBean.Issue.Item>)
+
+    fun homeNextPageUrl(url:String)
 }

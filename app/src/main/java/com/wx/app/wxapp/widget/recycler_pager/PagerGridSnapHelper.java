@@ -52,6 +52,9 @@ public class PagerGridSnapHelper extends SnapHelper {
     if (mRecyclerView == recyclerView) {
       return;
     }
+    if (recyclerView.getOnFlingListener() != null) {
+      recyclerView.setOnFlingListener(null);
+    }
     super.attachToRecyclerView(recyclerView);
     mRecyclerView = recyclerView;
   }

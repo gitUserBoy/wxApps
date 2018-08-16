@@ -1,5 +1,6 @@
 package com.wx.app.wxapp.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
@@ -10,11 +11,11 @@ import com.will.weiyuekotlin.utils.toast
 import com.wx.app.wxapp.R
 import com.wx.app.wxapp.R.layout.item_home_banner
 import com.wx.app.wxapp.bean.HomeBean
-import com.wx.app.wxapp.bean.HomeContentBean
-import com.wx.app.wxapp.mvp.module.HomeModuleImpl
+import com.wx.app.wxapp.mvp.module.HomeListModuleImpl
 import com.wx.app.wxapp.mvp.presenter.HomeListPresenterImpl
 import com.wx.app.wxapp.mvp.presenter.`interface`.HomeListPresenter
 import com.wx.app.wxapp.mvp.view.HomeListView
+import com.wx.app.wxapp.ui.activity.VideoPlayActivity
 import com.wx.app.wxapp.ui.adapter.HomeBannerAdapter
 import com.wx.app.wxapp.ui.adapter.HomeListAdapter
 import com.wx.app.wxapp.ui.fragment.base.BaseContentFragment
@@ -36,11 +37,10 @@ import kotlinx.android.synthetic.main.fragment_home_list.*
 
  */
 class HomeListFragment : BaseContentFragment<HomeListPresenter>() ,HomeListView{
-    override fun initEvent() {
-    }
-
+    private lateinit var homeList: ArrayList<HomeBean.Issue.Item>
     private lateinit var banner: View
     private lateinit var parentViewPager: ViewPager
+    private var pageUrl:String = ""
     companion object {
         private const val keys:String="key"
         fun getInstance(type:Int):HomeListFragment{
@@ -52,8 +52,27 @@ class HomeListFragment : BaseContentFragment<HomeListPresenter>() ,HomeListView{
         }
     }
 
-     fun setParentViewPager(view: ViewPager){
-         parentViewPager = view
+    fun setParentViewPager(view: ViewPager){
+        parentViewPager = view
+    }
+
+    override fun homeNextPageUrl(url: String) {
+        pageUrl = url
+    }
+
+    override fun showContentList(list: ArrayList<HomeBean.Issue.Item>) {
+        homeList.addAll(list)
+    }
+
+    override fun loadMoreFinish() {
+        if (rc_main_list==null)return
+        (rc_main_list.adapter as HomeListAdapter).setNewData(homeList)
+    }
+
+    override fun initComponent() {
+    }
+
+    override fun initEvent() {
     }
 
     override fun showLoading() {
@@ -71,27 +90,22 @@ class HomeListFragment : BaseContentFragment<HomeListPresenter>() ,HomeListView{
     }
 
     override fun loadFinish() {
-        if (rc_main_list==null)return
-        var homeListFragments:ArrayList<HomeContentBean> = ArrayList()
-        for (i in 0..10) {
-            homeListFragments.add(HomeContentBean("------$i"))
-        }
-        val homeListAdapter = HomeListAdapter(R.layout.item_home_content, homeListFragments)
-        rc_main_list.layoutManager = LinearLayoutManager(context,LinearLayout.VERTICAL,false)
-        homeListAdapter.addHeaderView(banner)
-        rc_main_list.adapter = homeListAdapter
     }
 
     override fun showError(msg: String, errorCode: Int) {
+
     }
 
-    override fun createPresenter(): HomeListPresenter = HomeListPresenterImpl(this, HomeModuleImpl())
+    override fun createPresenter(): HomeListPresenter = HomeListPresenterImpl(this, HomeListModuleImpl())
 
     override fun layoutId(): Int = R.layout.fragment_home_list
 
     override fun statusViewId(): MultipleStatusView = vw_multiple
 
-    override fun showBanner(list: ArrayList<HomeBean.Issue.Item>) {
+    override fun showData(list: ArrayList<HomeBean.Issue.Item>) {
+        homeList.clear()
+        homeList.addAll(list)
+
         var adapter = HomeBannerAdapter(item_home_banner, list)
         banner.rc_main_banner.layoutManager = PagerGridLayoutManager(1, 1, PagerGridLayoutManager.HORIZONTAL)
         val pageSnapHelper = PagerGridSnapHelper()
@@ -99,12 +113,33 @@ class HomeListFragment : BaseContentFragment<HomeListPresenter>() ,HomeListView{
         pageSnapHelper.attachToRecyclerView(banner.rc_main_banner)
         banner.rc_main_banner.setParentPager(parentViewPager)
         adapter.setOnItemClickListener { adapter, view, position ->
+            if (position == 3){
+                val intent = Intent(activity, VideoPlayActivity::class.java)
+                startActivity(intent)
+                return@setOnItemClickListener
+            }
             toast(context!!, "position : $position",Toast.LENGTH_SHORT)
         }
+
+        if (rc_main_list==null)return
+
+        val homeListAdapter = HomeListAdapter(R.layout.item_home_content, homeList)
+        rc_main_list.layoutManager = LinearLayoutManager(context, LinearLayout.VERTICAL,false)
+        homeListAdapter.removeAllHeaderView()
+        homeListAdapter.addHeaderView(banner)
+        rc_main_list.adapter = homeListAdapter
+        homeListAdapter.setOnLoadMoreListener({
+            if (!pageUrl.isEmpty()){
+                mPresenter.loadMore(pageUrl)
+            }
+        },rc_main_list)
     }
 
     override fun initData() {
+        homeList =  ArrayList()
         mPresenter.loadData(this.arguments!!.getInt(keys))
+
+
     }
 
     override fun initView() {

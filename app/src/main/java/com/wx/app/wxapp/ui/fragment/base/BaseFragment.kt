@@ -33,6 +33,7 @@ abstract class BaseFragment : Fragment() {
         initData()
         initView()
         initEvent()
+        initComponent()
     }
 
     abstract fun layoutId(): Int
@@ -40,4 +41,5 @@ abstract class BaseFragment : Fragment() {
     abstract fun initData()
     abstract fun initView()
     abstract fun initEvent()
+    abstract fun initComponent()
 }

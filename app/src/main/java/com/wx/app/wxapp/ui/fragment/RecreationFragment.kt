@@ -17,6 +17,9 @@ import kotlinx.android.synthetic.main.fragment_home.*
 
  */
 class RecreationFragment : BaseFragment() {
+    override fun initComponent() {
+    }
+
     override fun initEvent() {
     }
 

@@ -31,6 +31,8 @@ interface BaseContract {
 
         fun loadFinish()
 
+        fun loadMoreFinish()
+
         fun showError(msg:String,errorCode:Int)
     }
 }

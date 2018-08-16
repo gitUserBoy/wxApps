@@ -16,7 +16,7 @@ import io.reactivex.Observable
  * @date 2018/8/2/002
 
  */
-class HomeModuleImpl : BaseModuleImpl() {
+class HomeListModuleImpl : BaseModuleImpl() {
     fun getHomeBannerObservable(num: Int): Observable<HomeBean> =
         RetrofitManager.apiService.getFirstHomeData(num).compose(SchedulerUtils.ioToMain())
 

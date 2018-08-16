@@ -13,4 +13,6 @@ package com.wx.app.wxapp.mvp.presenter.`interface`
  */
 interface HomeListPresenter : BasePresenter {
     fun loadData(num:Int)
+
+    fun loadMore(url:String)
 }

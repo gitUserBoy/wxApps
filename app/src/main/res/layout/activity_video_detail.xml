@@ -4,7 +4,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
     >
-
+    <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+        android:id="@+id/detail_player"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
