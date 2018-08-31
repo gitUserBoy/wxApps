@@ -2,6 +2,7 @@ package com.wx.app.wxapp.ui.activity
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -35,6 +36,8 @@ class SplashActivity : BaseActivity() {
 
     private var mCompositeDisposable: CompositeDisposable? = CompositeDisposable()
     override fun initView() {
+//        iv_bg.visibility = View.GONE
+        tv_time.visibility = View.GONE
         Glide.with(this).load(picUrl)
                 .apply(RequestOptions()
                         .diskCacheStrategy(DiskCacheStrategy.ALL))
@@ -54,6 +57,8 @@ class SplashActivity : BaseActivity() {
     }
 
     fun setView(){
+//        iv_bg.visibility = View.VISIBLE
+        tv_time.visibility = View.VISIBLE
         mCompositeDisposable?.add(getObservable(3).doOnSubscribe({tv_time.text=""}).subscribeWith(object : DisposableObserver<Int>() {
             override fun onComplete() {
                 activity2main()

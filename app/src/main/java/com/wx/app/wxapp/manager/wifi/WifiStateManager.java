@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 /**
  * 描述：
  *
@@ -25,55 +27,62 @@ import java.util.List;
  * @date 2018/8/9/009
  */
 public class WifiStateManager {
-  private static WifiStateManager wifiStateManager = null;
+//  private static WifiStateManager wifiStateManager = null;
 
-  private static final String TAG = "WIFI";
+  private static final String TAG = "WifiStateManager";
 
   private WifiBroadcastReceiver wifiReceiver;
 
-  private static Context context;
+  private  Context context;
 
   List<WifiBean> realWifiList = new ArrayList<>();
   private int connectType = 0;//1：连接成功？ 2 正在连接（如果wifi热点列表发生变需要该字段）
   private int GPS_REQUEST_CODE = 1022;
 
-  public static WifiStateManager getInstance(Context contexts) {
-    if (wifiStateManager == null) {
-      wifiStateManager = new WifiStateManager(contexts);
-    }
-    return wifiStateManager;
-  }
+  /*单例设置*/
+//  public static WifiStateManager getInstance(Context contexts) {
+//    synchronized (WindowManager.class) {
+//      if (wifiStateManager == null) {
+//        wifiStateManager = new WifiStateManager(contexts);
+//      }
+//      return wifiStateManager;
+//    }
+//  }
+//
+//  private WifiStateManager(Context contexts) {
+//    this.context = contexts;
+//  }
 
-  private WifiStateManager(Context contexts) {
+  public WifiStateManager(Context contexts) {
     this.context = contexts;
   }
 
-
   public void createWifiBroadcastReceiver() {
-//    if (wifiReceiver == null){
-    //注册广播
-    if (CollectionUtils.isNullOrEmpty(realWifiList)) {
-      sortScaResult();
-    }
+    try {
+      if (wifiReceiver == null) {
+        wifiReceiver = new WifiBroadcastReceiver();
+      }
+      IntentFilter filter = new IntentFilter();
+      filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);//监听wifi是开关变化的状态
+      filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);//监听wifi连接状态广播,是否连接了一个有效路由
+      filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);//监听wifi列表变化（开启一个热点或者关闭一个热点）
+      filter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);//监听密码连接
+      if (context != null)
+        this.context.registerReceiver(wifiReceiver, filter);
 
-    wifiReceiver = new WifiBroadcastReceiver();
-    IntentFilter filter = new IntentFilter();
-    filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);//监听wifi是开关变化的状态
-    filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);//监听wifi连接状态广播,是否连接了一个有效路由
-    filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);//监听wifi列表变化（开启一个热点或者关闭一个热点）
-    this.context.registerReceiver(wifiReceiver, filter);
-//    }else {
-//      IntentFilter filter = new IntentFilter();
-//      filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);//监听wifi是开关变化的状态
-//      filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);//监听wifi连接状态广播,是否连接了一个有效路由
-//      filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);//监听wifi列表变化（开启一个热点或者关闭一个热点）
-//      context.registerReceiver(wifiReceiver, filter);
-//    }
+//      WifiSupport.scanWifi(context);
+    } catch (Exception e) {
+      Log.e(TAG, "createWifiBroadcastReceiver-----" + e.toString());
+    }
   }
 
   public void unregisterReceiver() {
-    if (wifiReceiver != null && this.context != null) {
-      context.unregisterReceiver(wifiReceiver);
+    try {
+      if (wifiReceiver != null && this.context != null) {
+        context.unregisterReceiver(wifiReceiver);
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "unregisterReceiver-----" + e.toString());
     }
   }
 
@@ -81,6 +90,8 @@ public class WifiStateManager {
   private class WifiBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+      wifiListeners.action(context, intent);
+
       switch (intent.getAction()) {
         /**
          * SUPPLICANT_STATE_CHANGED_ACTION    wifi 密码错误
@@ -109,7 +120,6 @@ public class WifiStateManager {
              */
             case WifiManager.WIFI_STATE_DISABLED: {
               Log.d(TAG, "已经关闭");
-              Toast.makeText(context, "WIFI处于关闭状态", Toast.LENGTH_SHORT).show();
               break;
             }
             case WifiManager.WIFI_STATE_DISABLING: {
@@ -118,7 +128,8 @@ public class WifiStateManager {
             }
             case WifiManager.WIFI_STATE_ENABLED: {
               Log.d(TAG, "已经打开");
-              sortScaResult();
+              WifiSupport.scanWifi(context);
+              updateList();
               break;
             }
             case WifiManager.WIFI_STATE_ENABLING: {
@@ -134,9 +145,7 @@ public class WifiStateManager {
         }
         case WifiManager.NETWORK_STATE_CHANGED_ACTION: {
           NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-          Log.d(TAG, "--NetworkInfo--" + info.toString());
           if (NetworkInfo.State.DISCONNECTED == info.getState()) {//wifi没连接上
-            Log.d(TAG, "wifi没连接上");
             for (int i = 0; i < realWifiList.size(); i++) {//没连接上将 所有的连接状态都置为“未连接”
               realWifiList.get(i).setState(AppContants.WIFI_STATE_UNCONNECT);
             }
@@ -145,54 +154,51 @@ public class WifiStateManager {
               wifiListeners.updateList(realWifiList);
             }
           } else if (NetworkInfo.State.CONNECTED == info.getState()) {//wifi连接上了
-            Log.d(TAG, "wifi连接上了");
             WifiInfo connectedWifiInfo = WifiSupport.getConnectedWifiInfo(context);
-
             //连接成功 跳转界面 传递ip地址
-            Toast.makeText(context, "wifi连接上了", Toast.LENGTH_SHORT).show();
             connectType = 1;
             wifiListSet(connectedWifiInfo.getSSID(), connectType);
             if (wifiListeners != null) {
               wifiListeners.hidingProgressBar();
               wifiListeners.updateList(realWifiList);
             }
-          } else if (NetworkInfo.State.CONNECTING == info.getState()) {//正在连接
-            Log.d(TAG, "wifi正在连接");
-
-            WifiInfo connectedWifiInfo = WifiSupport.getConnectedWifiInfo(context);
-            connectType = 2;
-            wifiListSet(connectedWifiInfo.getSSID(), connectType);
-            if (wifiListeners != null) {
-              wifiListeners.showProgressBar();
-              wifiListeners.updateList(realWifiList);
+          } else {
+            NetworkInfo.DetailedState state = info.getDetailedState();
+            if (state == state.CONNECTING) {
+              WifiInfo connectedWifiInfo = WifiSupport.getConnectedWifiInfo(context);
+              connectType = 2;
+              wifiListSet(connectedWifiInfo.getSSID(), connectType);
+              if (wifiListeners != null) {
+                wifiListeners.showProgressBar();
+                wifiListeners.updateList(realWifiList);
+              }
+            } else if (state == state.AUTHENTICATING) {
+              Log.d(TAG, "正在验证身份信息...");
+            } else if (state == state.OBTAINING_IPADDR) {
+              Log.d(TAG, "正在获取IP地址...");
+            } else if (state == state.FAILED) {
+              Log.d(TAG, "连接失败");
             }
           }
           break;
         }
+
         case WifiManager.SCAN_RESULTS_AVAILABLE_ACTION: {
           Log.d(TAG, "网络列表变化了");
           wifiListChange();
+
+          List<ScanResult> scanResults = WifiSupport.noSameName(WifiSupport.getWifiScanResult(context));
+          Log.e(TAG, "onReceive: "+scanResults.size() );
           if (wifiListeners != null) {
             wifiListeners.updateList(realWifiList);
           }
           break;
         }
         case WifiManager.EXTRA_SUPPLICANT_CONNECTED: {
-          Toast.makeText(context, "连接上了", Toast.LENGTH_SHORT).show();
         }
         break;
         default:
           break;
-      }
-      if (WifiSupport.isOpenWifi(context)) {
-        if (realWifiList.size() > 0) {
-          WifiInfo currentWifi = WifiSupport.getCurrentWifi(context);
-          if (!WifiSupport.currentIsBoxWifi(currentWifi.getSSID(), "gvmedia") && WifiSupport.containBoxWifi(realWifiList, "gvmedia")) {
-            Toast.makeText(context, "发现盒子网络", Toast.LENGTH_SHORT).show();
-          }
-        }
-      } else {
-        Toast.makeText(context, "wifi网络未连接", Toast.LENGTH_SHORT).show();
       }
     }
   }
@@ -200,7 +206,7 @@ public class WifiStateManager {
   /**
    * //网络状态发生改变 调用此方法！
    */
-  public void wifiListChange() {
+  private void wifiListChange() {
     sortScaResult();
     WifiInfo connectedWifiInfo = WifiSupport.getConnectedWifiInfo(context);
     if (connectedWifiInfo != null) {
@@ -214,7 +220,7 @@ public class WifiStateManager {
    * @param wifiName
    * @param type
    */
-  public List<WifiBean> wifiListSet(String wifiName, int type) {
+  private List<WifiBean> wifiListSet(String wifiName, int type) {
     int index = -1;
     WifiBean wifiInfo = new WifiBean();
     if (CollectionUtils.isNullOrEmpty(realWifiList)) {
@@ -247,32 +253,9 @@ public class WifiStateManager {
   }
 
   /**
-   * 检查是否已经授予权限
-   *
-   * @return
-   */
-//  private boolean checkPermission() {
-//    for (String permission : NEEDED_PERMISSIONS) {
-//      if (ActivityCompat.checkSelfPermission(this, permission)
-//              != PackageManager.PERMISSION_GRANTED) {
-//        return false;
-//      }
-//    }
-//    return true;
-//  }
-
-  /**
-   * 申请权限
-   */
-//  private void requestPermission() {
-//    ActivityCompat.requestPermissions(this,
-//            NEEDED_PERMISSIONS, PERMISSION_REQUEST_CODE);
-//  }
-
-  /**
    * 获取wifi列表然后将bean转成自己定义的WifiBean
    */
-  public List<WifiBean> sortScaResult() {
+  private List<WifiBean> sortScaResult() {
     List<ScanResult> scanResults = WifiSupport.noSameName(WifiSupport.getWifiScanResult(context));
     realWifiList.clear();
     if (!CollectionUtils.isNullOrEmpty(scanResults)) {
@@ -281,60 +264,16 @@ public class WifiStateManager {
         wifiBean.setWifiName(scanResults.get(i).SSID);
         wifiBean.setState(AppContants.WIFI_STATE_UNCONNECT);   //只要获取都假设设置成未连接，真正的状态都通过广播来确定
         wifiBean.setCapabilities(scanResults.get(i).capabilities);
-        wifiBean.setLevel(WifiSupport.getLevel(scanResults.get(i).level) + "");
+        wifiBean.setLevel(WifiSupport.getLevel(scanResults.get(i).level));
+        wifiBean.setLock(setPwdState(wifiBean));
         realWifiList.add(wifiBean);
 
         //排序
         Collections.sort(realWifiList);
-        // adapter.notifyDataSetChanged();
       }
     }
-
     return realWifiList;
-//    for (int i = 0; i < realWifiList.size(); i++) {
-//      WifiBean wifiBean = realWifiList.get(i);
-//      if (wifiBean.getWifiName().contains("gvmedia")){
-//        Toast.makeText(context,i+"---"+wifiBean.getWifiName(),Toast.LENGTH_SHORT).show();
-//      }
-//    }
   }
-
-//  @Override
-//  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//    boolean hasAllPermission = true;
-//    if (requestCode == PERMISSION_REQUEST_CODE) {
-//      for (int i : grantResults) {
-//        if (i != PackageManager.PERMISSION_GRANTED) {
-//          hasAllPermission = false;   //判断用户是否同意获取权限
-//          break;
-//        }
-//      }
-//
-//      //如果同意权限
-//      if (hasAllPermission) {
-//        mHasPermission = true;
-//        if (WifiSupport.isOpenWifi(WifiListActivity.this) && mHasPermission) {  //如果wifi开关是开 并且 已经获取权限
-//          initRecycler();
-//        } else {
-//          Toast.makeText(WifiListActivity.this, "WIFI处于关闭状态或权限获取失败1111", Toast.LENGTH_SHORT).show();
-//        }
-//
-//      } else {  //用户不同意权限
-//        mHasPermission = false;
-//        Toast.makeText(WifiListActivity.this, "获取权限失败", Toast.LENGTH_SHORT).show();
-//      }
-//    }
-//  }
-
-
-//  public void showProgressBar() {
-//    pbWifiLoading.setVisibility(View.VISIBLE);
-//  }
-//
-//  public void hidingProgressBar() {
-//    pbWifiLoading.setVisibility(View.GONE);
-//  }
 
   WifiListener wifiListeners = null;
 
@@ -344,9 +283,40 @@ public class WifiStateManager {
     void showProgressBar();
 
     void updateList(List<WifiBean> wifiBeanArrayList);
+
+    void action(Context context, Intent intent);
   }
 
   public void setWifiListeners(WifiListener wifiListeners) {
     this.wifiListeners = wifiListeners;
+  }
+
+  public void updateList() {
+    sortScaResult();
+    if (wifiListeners != null) {
+      wifiListeners.updateList(realWifiList);
+    }
+  }
+
+  /**
+   * 判断是否需要密码
+   * @param wifiBean
+   * @return
+   */
+  public boolean setPwdState(WifiBean wifiBean) {
+    if (wifiBean.getState().equals(AppContants.WIFI_STATE_UNCONNECT) || wifiBean.getState().equals(AppContants.WIFI_STATE_CONNECT)) {
+      String capabilities = wifiBean.getCapabilities();
+      if (WifiSupport.getWifiCipher(capabilities) == WifiSupport.WifiCipherType.WIFICIPHER_NOPASS) {//无需密码
+        return false;
+      } else {   //需要密码，弹出输入密码dialog
+        WifiConfiguration tempConfig = WifiSupport.isExsits(wifiBean.getWifiName(), context);
+        if (tempConfig == null) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

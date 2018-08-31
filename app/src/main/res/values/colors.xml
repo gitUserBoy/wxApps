@@ -26,4 +26,7 @@
     <color name="homecolor1">#1a5cc0 </color>
     <color name="color_red">#FF5722</color>
     <color name="black_home">#484848</color>
+
+    <color name="wifi_txt_bg">#323746</color>
+    <color name="wifi_txt_line">#3A3F4F</color>
 </resources>

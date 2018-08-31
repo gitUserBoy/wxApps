@@ -20,9 +20,9 @@ import kotlinx.android.synthetic.main.fragment_home.*
 /**
 
  * 描述：
-状态栏透明和间距处理
+    状态栏透明和间距处理
  *  StatusBarUtil.darkMode(activity)
-StatusBarUtil.setPaddingSmart(activity, toolbar)
+    StatusBarUtil.setPaddingSmart(activity, toolbar)
 
  * @author wx
 

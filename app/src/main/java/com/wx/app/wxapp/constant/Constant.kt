@@ -20,5 +20,28 @@ object Constant {
     /*error_code网络错误异常*/
     const val ERROR_LOADMORE_FAILD:Int= 0x00  //加载更多失败
 
-
+    /**
+     * 对话框标题
+     */
+    const val DIALOG_TITLE = "dialog_title"
+    /**
+     * 对话框信息
+     */
+    const  val DIALOG_MESSAGE = "dialog_message"
+    /**
+     * 对话框能否点击外部消失
+     */
+    const val DIALOG_CANCEL_ABLE = "dialog_cancel_able"
+    /**
+     * 对话框确认按钮名字
+     */
+    const val DIALOG_POSITIVE = "dialog_positive"
+    /**
+     * 对话框取消按钮名字
+     */
+    const val DIALOG_NEGATIVE = "dialog_negative"
+    /**
+     * 对话框二维码地址
+     */
+    const val DIALOG_QR_CODE = "dialog_qr_code"
 }

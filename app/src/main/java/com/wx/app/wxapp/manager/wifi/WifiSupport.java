@@ -312,4 +312,17 @@ public class WifiSupport {
     }
     return false;
   }
+
+  /**
+   * 浏览wifi列表
+   *
+   * @return
+   */
+  public static void scanWifi(Context context) {
+    WifiManager systemService = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    if (!systemService.isWifiEnabled()) {
+      systemService.setWifiEnabled(true);
+    }
+    systemService.startScan();
+  }
 }

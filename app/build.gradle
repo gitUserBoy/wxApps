@@ -17,6 +17,9 @@ android {
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // 实现毛玻璃那种透明的效果需要添加的库
+        renderscriptTargetApi 19
+        renderscriptSupportModeEnabled true    // Enable RS support
     }
     buildTypes {
         release {

@@ -2,12 +2,20 @@ package com.wx.app.wxapp.ui.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -20,6 +28,7 @@ import com.wx.app.wxapp.manager.wifi.AppContants;
 import com.wx.app.wxapp.manager.wifi.WifiStateManager;
 import com.wx.app.wxapp.manager.wifi.WifiSupport;
 import com.wx.app.wxapp.ui.adapter.WifiListAdapter;
+import com.wx.app.wxapp.ui.dialog.GuideDialog;
 import com.wx.app.wxapp.ui.dialog.WifiLinkDialog;
 
 import java.util.ArrayList;
@@ -46,16 +55,53 @@ public class WifiActivity extends Activity {
   };
 
   private boolean mHasPermission;
+  private int GPS_REQUEST_CODE = 1022;
+  private WifiManager wifiManager;
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_wifi);
     initView();
-    if (checkPermission()){
-      initRecycler();
-    }else {
-      requestPermission();
+    wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+    if (!wifiManager.isWifiEnabled()) {
+      wifiManager.setWifiEnabled(true);
     }
+    mHasPermission = checkPermission();
+    if (!mHasPermission && WifiSupport.isOpenWifi(this)) {  //未获取权限，申请权限
+      requestPermission();
+    } else if (mHasPermission && WifiSupport.isOpenWifi(this)) {  //已经获取权限
+      initRecycler();
+    } else {
+      Toast.makeText(this, "WIFI处于关闭状态", Toast.LENGTH_SHORT).show();
+    }
+    if (Build.VERSION.SDK_INT >= 23 && !isGpsOpen()) {
+      alertOpenGps();
+    } else {
+      mHasPermission = checkPermission();
+      if (!mHasPermission && WifiSupport.isOpenWifi(this)) {  //未获取权限，申请权限
+        requestPermission();
+      } else if (mHasPermission && WifiSupport.isOpenWifi(this)) {  //已经获取权限
+        initRecycler();
+      } else {
+        Toast.makeText(this, "WIFI处于关闭状态", Toast.LENGTH_SHORT).show();
+      }
+    }
+  }
+
+  private void alertOpenGps() {
+    new AlertDialog.Builder(this).setMessage("请打开手机GPS").setTitle("提示").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivityForResult(gpsIntent, GPS_REQUEST_CODE);
+      }
+    }).show();
+  }
+
+  private boolean isGpsOpen() {
+    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
   }
 
   /**
@@ -110,7 +156,7 @@ public class WifiActivity extends Activity {
   }
 
   private void initRecycler() {
-    instance = WifiStateManager.getInstance(this);
+    instance =new WifiStateManager(this);
     wifiListAdapter = new WifiListAdapter(this, wifiList);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
     recyclerView.setAdapter(wifiListAdapter);
@@ -127,31 +173,38 @@ public class WifiActivity extends Activity {
 
       @Override
       public void updateList(List<WifiBean> wifiBeanArrayList) {
+
+        setData(wifiBeanArrayList);
+
         wifiList.clear();
         wifiList.addAll(wifiBeanArrayList);
         wifiListAdapter.setData(wifiBeanArrayList);
+      }
+
+      @Override
+      public void action(Context context, Intent intent) {
       }
     });
 
 
     wifiListAdapter.setOnItemClickListener(new WifiListAdapter.onItemClickListener() {
       @Override
-      public void onItemClick(View view, int postion, Object o) {
-        WifiBean wifiBean = wifiList.get(postion);
+      public void onItemClick(View view, int position, Object o) {
+        WifiBean wifiBean = wifiList.get(position);
         if (wifiBean.getState().equals(AppContants.WIFI_STATE_UNCONNECT) || wifiBean.getState().equals(AppContants.WIFI_STATE_CONNECT)) {
-          String capabilities = wifiList.get(postion).getCapabilities();
+          String capabilities = wifiList.get(position).getCapabilities();
           if (WifiSupport.getWifiCipher(capabilities) == WifiSupport.WifiCipherType.WIFICIPHER_NOPASS) {//无需密码
             WifiConfiguration tempConfig = WifiSupport.isExsits(wifiBean.getWifiName(), WifiActivity.this);
             if (tempConfig == null) {
               WifiConfiguration exsits = WifiSupport.createWifiConfig(wifiBean.getWifiName(), null, WifiSupport.WifiCipherType.WIFICIPHER_NOPASS);
-              WifiSupport.addNetWork(exsits,WifiActivity.this);
+              WifiSupport.addNetWork(exsits, WifiActivity.this);
             } else {
               WifiSupport.addNetWork(tempConfig, WifiActivity.this);
             }
           } else {   //需要密码，弹出输入密码dialog
             WifiConfiguration tempConfig = WifiSupport.isExsits(wifiBean.getWifiName(), WifiActivity.this);
             if (tempConfig == null) {
-              noConfigurationWifi(postion);
+              noConfigurationWifi(position);
             } else {
               WifiSupport.addNetWork(tempConfig, WifiActivity.this);
             }
@@ -159,13 +212,16 @@ public class WifiActivity extends Activity {
         }
       }
     });
+    instance.createWifiBroadcastReceiver();
   }
+
   private void noConfigurationWifi(int position) {//之前没配置过该网络， 弹出输入密码界面
     WifiLinkDialog linkDialog = new WifiLinkDialog(this, R.style.dialog_download, wifiList.get(position).getWifiName(), wifiList.get(position).getCapabilities());
     if (!linkDialog.isShowing()) {
       linkDialog.show();
     }
   }
+
   private void initView() {
     recyclerView = findViewById(R.id.rv_list);
     loadView = findViewById(R.id.rl_loading);
@@ -173,14 +229,36 @@ public class WifiActivity extends Activity {
   }
 
   @Override
-  protected void onResume() {
-    super.onResume();
-    instance.createWifiBroadcastReceiver();
+  protected void onDestroy() {
+    super.onDestroy();
+    if (instance != null) {
+      instance.unregisterReceiver();
+    }
   }
 
-  @Override
-  protected void onPause() {
-    super.onPause();
-    instance.unregisterReceiver();
+  RecyclerView recyclerViewWifi;
+  WifiListAdapter wifiListAdapterWifi;
+  boolean isFirsShowDialog = false;
+
+  private void setData(List<WifiBean> wifiBeanArrayList) {
+    List<WifiBean> list = new ArrayList();
+    for (WifiBean bean : wifiBeanArrayList) {
+      if (bean.getWifiName().contains("Cisco")) {
+        list.add(bean);
+      }
+    }
+
+    if (!isFirsShowDialog) {
+      isFirsShowDialog = true;
+      View view = View.inflate(this, R.layout.dialog_wifi, null);
+      recyclerViewWifi = view.findViewById(R.id.recycler_wifi);
+      wifiListAdapterWifi = new WifiListAdapter(this, list);
+      recyclerViewWifi.setLayoutManager(new LinearLayoutManager(this));
+      recyclerViewWifi.setAdapter(wifiListAdapterWifi);
+      GuideDialog.newInstance().setActivity(this).setContentView(view);
+    } else {
+      if (null != wifiListAdapterWifi)
+        wifiListAdapterWifi.setData(list);
+    }
   }
 }
