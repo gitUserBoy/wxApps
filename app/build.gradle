@@ -39,6 +39,12 @@ android {
         //        targetGenDir 'src/main/java'
     }
     buildToolsVersion '26.0.2'
+
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
 }
 
 dependencies {

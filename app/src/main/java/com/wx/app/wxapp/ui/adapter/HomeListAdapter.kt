@@ -2,21 +2,18 @@ package com.wx.app.wxapp.ui.adapter
 
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
-import com.wx.app.wxapp.bean.HomeBean
+import com.wx.app.wxapp.bean.ky.MediaBean
 
 /**
+ * @author: wu.xu
+ * @data: 2018/11/1/001.
 
- * 描述：
-
- *
-
- * @author wx
-
- * @date 2018/7/31/031
-
+ * e-mail:W_spongeBob@163.com
  */
-class HomeListAdapter(layoutId: Int, data: MutableList<HomeBean.Issue.Item>?) : BaseQuickAdapter<HomeBean.Issue.Item, BaseViewHolder>(layoutId, data) {
+class HomeListAdapter(layoutResId: Int, data: ArrayList<MediaBean.Issue.Item>)
+    : BaseQuickAdapter<MediaBean.Issue.Item, BaseViewHolder>(layoutResId, data) {
 
-    override fun convert(helper: BaseViewHolder, item: HomeBean.Issue.Item) {
+    override fun convert(helper: BaseViewHolder, item: MediaBean.Issue.Item) {
+
     }
 }

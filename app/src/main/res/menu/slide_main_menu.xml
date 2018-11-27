@@ -4,19 +4,19 @@
         <item
             android:id="@+id/nav_me"
             android:title="我"
-            android:icon="@drawable/leak_canary_icon"/>
+            android:icon="@drawable/ic_launcher_foreground"/>
         <item
             android:id="@+id/nav_friend"
             android:title="好友"
-            android:icon="@drawable/leak_canary_icon"/>
+            android:icon="@drawable/ic_launcher_foreground"/>
         <item
             android:id="@+id/nav_notification"
             android:title="通知"
-            android:icon="@drawable/leak_canary_icon"/>
+            android:icon="@drawable/ic_launcher_foreground"/>
         <item
             android:id="@+id/nav_message"
             android:title="私信"
-            android:icon="@drawable/leak_canary_icon"
+            android:icon="@drawable/ic_launcher_foreground"
             />
     </group>
     <group android:checkableBehavior="none"
@@ -24,7 +24,7 @@
         <item
             android:id="@+id/nav_manage"
             android:title="应用管理"
-            android:icon="@drawable/leak_canary_icon"/>
+            android:icon="@drawable/ic_launcher_foreground"/>
     </group>
     <group
         android:checkableBehavior="none"

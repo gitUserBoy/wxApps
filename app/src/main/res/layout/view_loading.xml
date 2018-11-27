@@ -6,20 +6,26 @@
                 android:layout_height="match_parent"
     >
     <!--<ProgressBar-->
-        <!--style="@android:style/Widget.ProgressBar.Small"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--/>-->
-
-    <com.github.ybq.android.spinkit.SpinKitView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/spin_kit"
-        style="@style/SpinKitView.Large.ChasingDots"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="50dp"
+    <!--style="@android:style/Widget.ProgressBar.Small"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--/>-->
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        app:SpinKit_Color="@color/colorAccent" />
+        >
+
+        <com.github.ybq.android.spinkit.SpinKitView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/spin_kit"
+            style="@style/SpinKitView.Large.ChasingDots"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:padding="50dp"
+            app:SpinKit_Color="@color/colorAccent"/>
+    </RelativeLayout>
 </RelativeLayout>

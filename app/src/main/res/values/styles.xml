@@ -34,10 +34,12 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="AppTheme.NorBarAndBgDim">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -47,6 +49,7 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
     <style name="news_content">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?android:textColorPrimary</item>
@@ -63,6 +66,7 @@
     </style>
 
     <style name="MultipleStatusView"/>
+
     <style name="MultipleStatusView.Content">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -99,4 +103,6 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
     </style>
+
+
 </resources>

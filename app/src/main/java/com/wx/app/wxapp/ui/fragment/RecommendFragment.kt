@@ -17,19 +17,19 @@ import kotlinx.android.synthetic.main.fragment_home.*
 
  */
 class RecommendFragment : BaseFragment() {
-    override fun initComponent() {
-    }
-
-    override fun initEvent() {
-    }
-
-    override fun statusViewId(): MultipleStatusView = vw_multiple
-    override fun layoutId(): Int = fragment_recommend
-
-    override fun initData() {
+    override fun detachView() {
     }
 
     override fun initView() {
     }
+
+    override fun initData() {
+    }
+
+    override fun attachView() {
+    }
+
+    override fun statusViewId(): MultipleStatusView = vw_multiple
+    override fun layoutId(): Int = fragment_recommend
 
 }

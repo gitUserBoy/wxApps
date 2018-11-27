@@ -17,10 +17,13 @@ import kotlinx.android.synthetic.main.fragment_home.*
 
  */
 class MineFragment : BaseFragment() {
-    override fun initComponent() {
+    override fun detachView() {
     }
 
-    override fun initEvent() {
+    override fun initView() {
+    }
+
+    override fun attachView() {
     }
 
     override fun statusViewId(): MultipleStatusView = vw_multiple
@@ -28,8 +31,5 @@ class MineFragment : BaseFragment() {
     override fun layoutId(): Int = fragment_mine
 
     override fun initData() {
-    }
-
-    override fun initView() {
     }
 }

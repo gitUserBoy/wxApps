@@ -1,4 +1,4 @@
-package com.wx.app.wxapp.bean
+package com.wx.app.wxapp.bean.ky
 
 
 
@@ -9,7 +9,7 @@ import java.io.Serializable
  * @author wx
  * @date 2018/8/3/003
  */
-data class HomeBean(val issueList: ArrayList<Issue>, val nextPageUrl: String, val nextPublishTime: Long, val newestIssueType: String, val dialog: Any){
+data class MediaBean(val issueList: ArrayList<Issue>, val nextPageUrl: String, val nextPublishTime: Long, val newestIssueType: String, val dialog: Any){
 
     data class Issue(val releaseTime:Long, val type:String, val date:Long, val total:Int, val publishTime:Long, val itemList:ArrayList<Item>, var count:Int, val nextPageUrl:String){
 
@@ -62,7 +62,7 @@ data class HomeBean(val issueList: ArrayList<Issue>, val nextPageUrl: String, va
                             val lastViewTime: Any,
                             val playlists: Any,
                             val header: Header,
-                            val itemList:ArrayList<HomeBean.Issue.Item>
+                            val itemList:ArrayList<Item>
             ) : Serializable {
                 data class Tag(val id: Int, val name: String, val actionUrl: String, val adTrack: Any) : Serializable
 
@@ -85,8 +85,8 @@ data class HomeBean(val issueList: ArrayList<Issue>, val nextPageUrl: String, va
 
                 data class Url(val size: Long) : Serializable
 
-                data class Header(val id: Int,val icon: String,val iconType: String,val description: String,val title: String,val font: String,val cover: String,val label: Label,
-                                  val actionUrl: String ,val subtitle:String, val labelList: ArrayList<Label>): Serializable{
+                data class Header(val id: Int, val icon: String, val iconType: String, val description: String, val title: String, val font: String, val cover: String, val label: Label,
+                                  val actionUrl: String, val subtitle:String, val labelList: ArrayList<Label>): Serializable{
                     data class Label(val text: String,val card: String,val detial: Any,val actionUrl: Any)
                 }
 

@@ -154,3 +154,11 @@ fun string2Date(str: String, format: String): Date {
 }
 
 
+/**
+ * Media类型对比
+ */
+fun compareMediaType(types:String){
+//    Constant.array_media_online
+}
+
+

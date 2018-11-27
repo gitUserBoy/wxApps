@@ -1,6 +1,7 @@
 package com.wx.app.wxapp.net.api
 
-import com.wx.app.wxapp.bean.HomeBean
+import com.wx.app.wxapp.bean.book.Recommend
+import com.wx.app.wxapp.bean.ky.MediaBean
 import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -22,13 +23,13 @@ interface ApiService {
      * 首页精选
      */
     @GET(ApiConfig.HOME_BANNER)
-    fun getFirstHomeData(@Query("num") num:Int): Observable<HomeBean>
-//
+    fun getFirstHomeData(@Query("num") num:Int): Observable<MediaBean>
+
     /**
      * 根据 nextPageUrl 请求数据下一页数据
      */
     @GET
-    fun getMoreHomeData(@Url url: String): Observable<HomeBean>
+    fun getMoreHomeData(@Url url: String): Observable<MediaBean>
 
 //    /**
 //     * 根据item id获取相关视频
@@ -77,4 +78,7 @@ interface ApiService {
 //     */
 //    @GET("v4/tabs/follow")
 //    fun getFollowInfo(): Observable<HomeBean.Issue>
+
+    @GET("/book/recommend")
+    fun getRecomend(@Query("gender") gender: String): Observable<Recommend>
 }

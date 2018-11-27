@@ -12,5 +12,7 @@ package com.wx.app.wxapp.constant
 
  */
 object UriConstant {
-    const val BASE_URL: String = "http://baobab.kaiyanapp.com/api/"
+    const val BASE_URL_KY: String = "http://baobab.kaiyanapp.com/api/"  //开眼
+
+    const val BASE_URL_BOOK: String = "http://baobab.kaiyanapp.com/api/"  //开眼
 }

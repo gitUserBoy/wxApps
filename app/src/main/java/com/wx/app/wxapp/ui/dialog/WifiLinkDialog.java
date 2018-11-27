@@ -31,7 +31,7 @@ public class WifiLinkDialog extends Dialog implements View.OnClickListener{
 
     private Button cancel_button;
 
-    private Button cofirm_button;
+    private Button confirm_button;
 
     private String text_nameString = null;
 
@@ -63,7 +63,7 @@ public class WifiLinkDialog extends Dialog implements View.OnClickListener{
 
     private void initListener() {
         cancel_button.setOnClickListener(this);
-        cofirm_button.setOnClickListener(this);
+        confirm_button.setOnClickListener(this);
         password_edit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -79,15 +79,15 @@ public class WifiLinkDialog extends Dialog implements View.OnClickListener{
             public void afterTextChanged(Editable s) {
                 if((capabilities.contains("WPA") || capabilities.contains("WPA2") || capabilities.contains("WPS"))){
                     if(password_edit.getText() == null && password_edit.getText().toString().length() < 8){
-                        cofirm_button.setClickable(false);
+                        confirm_button.setClickable(false);
                     }else{
-                        cofirm_button.setClickable(true);
+                        confirm_button.setClickable(true);
                     }
                 }else if(capabilities.contains("WEP")){
                     if(password_edit.getText() == null && password_edit.getText().toString().length() < 8){
-                        cofirm_button.setClickable(false);
+                        confirm_button.setClickable(false);
                     }else{
-                        cofirm_button.setClickable(true);
+                        confirm_button.setClickable(true);
                     }
                 }
             }
@@ -98,13 +98,13 @@ public class WifiLinkDialog extends Dialog implements View.OnClickListener{
         text_name = (TextView) view.findViewById(R.id.wifi_title);
         password_edit = (EditText) view.findViewById(R.id.password_edit);
         cancel_button = (Button) view.findViewById(R.id.cancel_button);
-        cofirm_button = (Button)view.findViewById(R.id.cofirm_button);
+        confirm_button = (Button)view.findViewById(R.id.confirm_button);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.cofirm_button:{
+            case R.id.confirm_button:{
                 WifiConfiguration tempConfig  = WifiSupport.isExsits(text_nameString,getContext());
                 boolean result = false;
                 if(tempConfig == null){

@@ -1,28 +1,16 @@
 package com.wx.app.wxapp.ui.fragment
 
-import android.content.Intent
 import android.os.Bundle
-import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.Toast
-import com.will.weiyuekotlin.utils.toast
 import com.wx.app.wxapp.R
-import com.wx.app.wxapp.R.layout.item_home_banner
-import com.wx.app.wxapp.bean.HomeBean
-import com.wx.app.wxapp.mvp.module.HomeListModuleImpl
-import com.wx.app.wxapp.mvp.presenter.HomeListPresenterImpl
-import com.wx.app.wxapp.mvp.presenter.`interface`.HomeListPresenter
-import com.wx.app.wxapp.mvp.view.HomeListView
-import com.wx.app.wxapp.ui.activity.VideoPlayActivity
-import com.wx.app.wxapp.ui.adapter.HomeBannerAdapter
+import com.wx.app.wxapp.bean.ky.MediaBean
+import com.wx.app.wxapp.mvp.constract.MediaListContract
+import com.wx.app.wxapp.mvp.module.MediaListModule
+import com.wx.app.wxapp.mvp.presenter.MediaListPresenter
 import com.wx.app.wxapp.ui.adapter.HomeListAdapter
 import com.wx.app.wxapp.ui.fragment.base.BaseContentFragment
-import com.wx.app.wxapp.widget.recycler_pager.PagerGridLayoutManager
-import com.wx.app.wxapp.widget.recycler_pager.PagerGridSnapHelper
 import com.wx.app.wxapp.widget.view.MultipleStatusView
-import kotlinx.android.synthetic.main.banner_home.view.*
 import kotlinx.android.synthetic.main.fragment_home_list.*
 
 /**
@@ -36,115 +24,105 @@ import kotlinx.android.synthetic.main.fragment_home_list.*
  * @date 2018/8/7/007
 
  */
-class HomeListFragment : BaseContentFragment<HomeListPresenter>() ,HomeListView{
-    private lateinit var homeList: ArrayList<HomeBean.Issue.Item>
-    private lateinit var banner: View
-    private lateinit var parentViewPager: ViewPager
-    private var pageUrl:String = ""
+class HomeListFragment : BaseContentFragment<MediaListContract.MediaListView, MediaListContract.MediaListModule, MediaListPresenter>(), MediaListContract.MediaListView {
+
+
+    private var nextPageUrl: String = ""
+
+    val list = ArrayList<MediaBean.Issue.Item.Data>()
+
     companion object {
-        private const val keys:String="key"
-        fun getInstance(type:Int):HomeListFragment{
+        private var type: Int = 0
+        private const val keys: String = "key"
+        fun newInstance(type: Int): HomeListFragment {
             val homeListFragment = HomeListFragment()
             val bundle = Bundle()
-            bundle.putInt(keys,type)
+            bundle.putInt(keys, type)
             homeListFragment.arguments = bundle
             return homeListFragment
         }
     }
 
-    fun setParentViewPager(view: ViewPager){
-        parentViewPager = view
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val bundle = arguments
+        type = bundle!!.getInt(keys)
+        super.onViewCreated(view, savedInstanceState)
     }
 
-    override fun homeNextPageUrl(url: String) {
-        pageUrl = url
-    }
+    override fun chileView(): MediaListContract.MediaListView = this
 
-    override fun showContentList(list: ArrayList<HomeBean.Issue.Item>) {
-        homeList.addAll(list)
-    }
+    override fun chileModule(): MediaListContract.MediaListModule = MediaListModule()
 
-    override fun loadMoreFinish() {
-        if (rc_main_list==null)return
-        (rc_main_list.adapter as HomeListAdapter).setNewData(homeList)
-    }
-
-    override fun initComponent() {
-    }
-
-    override fun initEvent() {
-    }
-
-    override fun showLoading() {
-        srf_refresh.autoRefresh()
-    }
-
-    override fun dismissLoading() {
-        multipleStatusView.showContent()
-    }
-
-    override fun loadMore() {
-    }
-
-    override fun loadData() {
-    }
-
-    override fun loadFinish() {
-    }
-
-    override fun showError(msg: String, errorCode: Int) {
-
-    }
-
-    override fun createPresenter(): HomeListPresenter = HomeListPresenterImpl(this, HomeListModuleImpl())
+    override fun createPresenter(): MediaListPresenter = MediaListPresenter()
 
     override fun layoutId(): Int = R.layout.fragment_home_list
 
     override fun statusViewId(): MultipleStatusView = vw_multiple
 
-    override fun showData(list: ArrayList<HomeBean.Issue.Item>) {
-        homeList.clear()
-        homeList.addAll(list)
+    override fun showLoading() {
+        multipleStatusView.showLoading()
+    }
 
-        var adapter = HomeBannerAdapter(item_home_banner, list)
-        banner.rc_main_banner.layoutManager = PagerGridLayoutManager(1, 1, PagerGridLayoutManager.HORIZONTAL)
-        val pageSnapHelper = PagerGridSnapHelper()
-        banner.rc_main_banner.adapter = adapter
-        pageSnapHelper.attachToRecyclerView(banner.rc_main_banner)
-        banner.rc_main_banner.setParentPager(parentViewPager)
-        adapter.setOnItemClickListener { adapter, view, position ->
-            if (position == 3){
-                val intent = Intent(activity, VideoPlayActivity::class.java)
-                startActivity(intent)
-                return@setOnItemClickListener
-            }
-            toast(context!!, "position : $position",Toast.LENGTH_SHORT)
-        }
+    override fun complete() {
+        multipleStatusView.showContent()
+    }
 
-        if (rc_main_list==null)return
+    override fun loadMoreLoading() {
+    }
 
-        val homeListAdapter = HomeListAdapter(R.layout.item_home_content, homeList)
-        rc_main_list.layoutManager = LinearLayoutManager(context, LinearLayout.VERTICAL,false)
-        homeListAdapter.removeAllHeaderView()
-        homeListAdapter.addHeaderView(banner)
-        rc_main_list.adapter = homeListAdapter
-        homeListAdapter.setOnLoadMoreListener({
-            if (!pageUrl.isEmpty()){
-                mPresenter.loadMore(pageUrl)
-            }
-        },rc_main_list)
+    override fun loadMoreComplete() {
+    }
+
+
+    override fun showList() {
+        mPresenter.loadData(type)
+    }
+
+
+    override fun initView() {
     }
 
     override fun initData() {
-        homeList =  ArrayList()
-        mPresenter.loadData(this.arguments!!.getInt(keys))
+        showList()
+//        when (type) {
+//            0 -> {
+//                View.inflate(context,)
+//            }
+//            else -> {
+//                showList()
+//            }
+//
+//        }
+    }
+
+    override fun showError(msg: String, errorCode: Int) {
+        //TODO:展示列表获取错误
+    }
+
+
+    override fun showNextLoadDataError(esg: String, errorType: Int) {
+
+    }
+
+    override fun loadListData(mediaBean: MediaBean) {
+        var itemList = mediaBean.issueList.let {
+            it[0].itemList
+        }
+        val adapters = HomeListAdapter(R.layout.item_home_content, itemList)
+        rc_list.adapter = adapters
+        rc_list.layoutManager = LinearLayoutManager(context)
+
+//        adapters.setLoadMoreView(SimpleLoadMoreView())
+//
+//        adapters.setOnLoadMoreListener({
+//            nextPageUrl = mediaBean.nextPageUrl
+//            mPresenter.loadNextData(nextPageUrl)
+//        },rc_list)
 
 
     }
 
-    override fun initView() {
-        mPresenter.attachView()
-
-        banner = View.inflate(context, R.layout.banner_home, null)
+    override fun loadNextSuccess(mediaBean: MediaBean) {
     }
+
 }

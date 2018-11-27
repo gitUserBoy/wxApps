@@ -61,7 +61,7 @@
             android:layout_height="match_parent" />
 
         <Button
-            android:id="@+id/cofirm_button"
+            android:id="@+id/confirm_button"
             android:gravity="center"
             android:textSize="14sp"
             android:text="确定"

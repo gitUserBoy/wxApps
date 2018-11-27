@@ -15,11 +15,24 @@
         android:id="@+id/srf_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:srlAccentColor="#00000000"
+        app:srlPrimaryColor="#00000000"
+        app:srlEnablePreviewInEditMode="true"
         >
+        <com.scwang.smartrefresh.header.PhoenixHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/rc_main_list"
+            android:id="@+id/rc_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         </android.support.v7.widget.RecyclerView>
+
+        <!--<com.wx.app.wxapp.widget.view.AutoNoScrollRecyclerView-->
+            <!--android:id="@+id/rc_main_list"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
+        <!--</com.wx.app.wxapp.widget.view.AutoNoScrollRecyclerView>-->
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 </com.wx.app.wxapp.widget.view.MultipleStatusView>

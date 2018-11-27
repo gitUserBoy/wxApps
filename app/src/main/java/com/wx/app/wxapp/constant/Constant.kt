@@ -44,4 +44,11 @@ object Constant {
      * 对话框二维码地址
      */
     const val DIALOG_QR_CODE = "dialog_qr_code"
+
+    /**
+     *视频类型数据：online（线上）、live（直播）、local（本地视频）
+     */
+    val array_media_online : Array<String> = arrayOf("游戏","搞笑","动漫","电视剧","电影")
+    val array_media_live : Array<String> = arrayOf("游戏","影视","娱乐","其他")
+    val array_media_local : Array<String> = arrayOf("本地视频")
 }

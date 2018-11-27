@@ -4,12 +4,9 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import com.wx.app.wxapp.MyApplication
 import com.wx.app.wxapp.constant.UriConstant
 import com.wx.app.wxapp.net.api.ApiService
-import com.wx.app.wxapp.utils.NetworkUtil
+import com.wx.app.wxapp.net.support.InterceptorManager
 import okhttp3.Cache
-import okhttp3.CacheControl
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
@@ -27,106 +24,96 @@ import java.util.concurrent.TimeUnit
 
  */
 object RetrofitManager {
+    const val KY_TYPE: Int = 20181
+    const val BOOK_TYPE: Int = 20182
 
-    private var retrofit: Retrofit? = null
-    private var client: OkHttpClient? = null
-    val apiService: ApiService by lazy { getRetrofit()!!.create(ApiService::class.java) }
-    private var token: String = ""
+    private var kyRetrofit: Retrofit? = null
+    private var bookRetrofit: Retrofit? = null
 
-    private fun addHeaderInterceptor(): Interceptor {
-        return Interceptor { chain ->
-            val request = chain.request()
+    private lateinit var apiService: ApiService
 
-            val requestBuilder = request.newBuilder().header("token", token)
-                    .method(request.method(), request.body())
+    /**
+     * 设定retrofit类型，避免多个类型数据查询混乱
+     */
+    fun apiServiceInstance(type: Int): ApiService {
+        when (type) {
+            KY_TYPE -> {
+                apiService = getKaiYanRetrofit()!!.create(ApiService::class.java)
+            }
+            BOOK_TYPE -> {
+                apiService = getBookRetrofit()!!.create(ApiService::class.java)
+            }
+        }
+        return apiService
+    }
 
-            chain.proceed(requestBuilder.build())
+
+    private fun getKaiYanRetrofit(): Retrofit? {
+        synchronized(RetrofitManager::class.java) {
+            if (kyRetrofit == null) {
+                kyRetrofit = Retrofit.Builder()
+                        .baseUrl(UriConstant.BASE_URL_KY)  //自己配置
+                        .client(kaiYanClient())
+                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+            }
+            return kyRetrofit
         }
     }
 
-    private fun addQueryParameterInterceptor(): Interceptor {
-        return Interceptor { chain ->
-            val request = chain.request()
-
-            val requestUrl = request.url().newBuilder()
-                    .addQueryParameter("phoneSystem", "")
-                    .addQueryParameter("phoneModel", "")
-                    .build()
-
-            chain.proceed(request.newBuilder().url(requestUrl).build())
-
-
+    private fun getBookRetrofit(): Retrofit? {
+        synchronized(RetrofitManager::class.java) {
+            if (bookRetrofit == null) {
+                return Retrofit.Builder()
+                        .baseUrl(UriConstant.BASE_URL_BOOK)  //自己配置
+                        .client(kaiYanClient())
+                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+            }
         }
+        return bookRetrofit
     }
 
     /**
-     * 设置缓存
+     * 开眼网络client
      */
-    private fun addCacheInterceptor(): Interceptor {
-        return Interceptor { chain ->
-            var request = chain.request()
-            if (!NetworkUtil.isNetworkAvailable(MyApplication.context)) {
-                request = request.newBuilder()
-                        .cacheControl(CacheControl.FORCE_CACHE)
-                        .build()
-            }
-            val response = chain.proceed(request)
-            if (NetworkUtil.isNetworkAvailable(MyApplication.context)) {
-                val maxAge = 0
-                // 有网络时 设置缓存超时时间0个小时 ,意思就是不读取缓存数据,只对get有用,post没有缓冲
-                response.newBuilder()
-                        .header("Cache-Control", "public, max-age=" + maxAge)
-                        .removeHeader("Retrofit")// 清除头信息，因为服务器如果不支持，会返回一些干扰信息，不清除下面无法生效
-                        .build()
-            } else {
-                // 无网络时，设置超时为4周  只对get有用,post没有缓冲
-                val maxStale = 60 * 60 * 24 * 28
-                response.newBuilder()
-                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
-                        .removeHeader("nyn")
-                        .build()
-            }
-            response
-        }
+    private fun kaiYanClient(): OkHttpClient {
+        //设置 请求的缓存的大小跟位置
+        val cacheFile = File(MyApplication.context.cacheDir, "cache")
+        val cache = Cache(cacheFile, 1024 * 1024 * 50) //50Mb 缓存的大小
+
+        return OkHttpClient.Builder()
+                .addInterceptor(InterceptorManager.addQueryParameterInterceptor())  //参数添加
+                .addInterceptor(InterceptorManager.addHeaderInterceptor()) // token过滤
+                .addInterceptor(InterceptorManager.addCacheInterceptor())
+                .addInterceptor(InterceptorManager.addLoggingInterceptor()) //日志,所有的请求响应度看到
+                .cache(cache)  //添加缓存
+                .connectTimeout(60L, TimeUnit.SECONDS)
+                .readTimeout(60L, TimeUnit.SECONDS)
+                .writeTimeout(60L, TimeUnit.SECONDS)
+                .build()
     }
 
+    /**
+     * 追书网络client
+     */
+    private fun BookClient(): OkHttpClient {
+        //设置 请求的缓存的大小跟位置
+        val cacheFile = File(MyApplication.context.cacheDir, "cache")
+        val cache = Cache(cacheFile, 1024 * 1024 * 50) //50Mb 缓存的大小
 
-
-    private fun getRetrofit(): Retrofit? {
-        if (retrofit == null) {
-            synchronized(RetrofitManager::class.java) {
-                if (retrofit == null) {
-                    //添加一个log拦截器,打印所有的log
-                    val httpLoggingInterceptor = HttpLoggingInterceptor()
-                    //可以设置请求过滤的水平,body,basic,headers
-                    httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-                    //设置 请求的缓存的大小跟位置
-                    val cacheFile = File(MyApplication.context.cacheDir, "cache")
-                    val cache = Cache(cacheFile, 1024 * 1024 * 50) //50Mb 缓存的大小
-
-                    client = OkHttpClient.Builder()
-                            .addInterceptor(addQueryParameterInterceptor())  //参数添加
-                            .addInterceptor(addHeaderInterceptor()) // token过滤
-                            .addInterceptor(addCacheInterceptor())
-                            .addInterceptor(httpLoggingInterceptor) //日志,所有的请求响应度看到
-                            .cache(cache)  //添加缓存
-                            .connectTimeout(60L, TimeUnit.SECONDS)
-                            .readTimeout(60L, TimeUnit.SECONDS)
-                            .writeTimeout(60L, TimeUnit.SECONDS)
-                            .build()
-
-                    // 获取retrofit的实例
-                    retrofit = Retrofit.Builder()
-                            .baseUrl(UriConstant.BASE_URL)  //自己配置
-                            .client(client!!)
-                            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
-                }
-            }
-        }
-        return retrofit
+        return OkHttpClient.Builder()
+                .addInterceptor(InterceptorManager.addQueryParameterInterceptor())  //参数添加
+                .addInterceptor(InterceptorManager.addHeaderInterceptor()) // token过滤
+                .addInterceptor(InterceptorManager.addCacheInterceptor())
+                .addInterceptor(InterceptorManager.addLoggingInterceptor()) //日志,所有的请求响应度看到
+                .cache(cache)  //添加缓存
+                .connectTimeout(60L, TimeUnit.SECONDS)
+                .readTimeout(60L, TimeUnit.SECONDS)
+                .writeTimeout(60L, TimeUnit.SECONDS)
+                .build()
     }
 
 }

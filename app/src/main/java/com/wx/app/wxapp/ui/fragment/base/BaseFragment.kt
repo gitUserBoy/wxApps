@@ -30,16 +30,20 @@ abstract class BaseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         multipleStatusView = statusViewId()
-        initData()
+        attachView()
         initView()
-        initEvent()
-        initComponent()
+        initData()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        detachView()
     }
 
     abstract fun layoutId(): Int
     abstract fun statusViewId(): MultipleStatusView
+    abstract fun attachView()
     abstract fun initData()
+    abstract fun detachView()
     abstract fun initView()
-    abstract fun initEvent()
-    abstract fun initComponent()
 }

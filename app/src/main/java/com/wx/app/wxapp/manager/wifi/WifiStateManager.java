@@ -1,14 +1,17 @@
 package com.wx.app.wxapp.manager.wifi;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -55,6 +58,7 @@ public class WifiStateManager {
 
   public WifiStateManager(Context contexts) {
     this.context = contexts;
+    localPermission = checkLocationPermission();
   }
 
   public void createWifiBroadcastReceiver() {
@@ -91,7 +95,7 @@ public class WifiStateManager {
     @Override
     public void onReceive(Context context, Intent intent) {
       wifiListeners.action(context, intent);
-
+      if (!localPermission) return;
       switch (intent.getAction()) {
         /**
          * SUPPLICANT_STATE_CHANGED_ACTION    wifi 密码错误
@@ -252,10 +256,12 @@ public class WifiStateManager {
     return realWifiList;
   }
 
+  private static boolean localPermission=false;
   /**
    * 获取wifi列表然后将bean转成自己定义的WifiBean
    */
   private List<WifiBean> sortScaResult() {
+    if (!localPermission) return realWifiList;
     List<ScanResult> scanResults = WifiSupport.noSameName(WifiSupport.getWifiScanResult(context));
     realWifiList.clear();
     if (!CollectionUtils.isNullOrEmpty(scanResults)) {
@@ -315,6 +321,27 @@ public class WifiStateManager {
         } else {
           return false;
         }
+      }
+    }
+    return true;
+  }
+
+  //两个危险权限需要动态申请
+  private static final String[] NEEDED_PERMISSIONS = new String[]{
+          Manifest.permission.ACCESS_COARSE_LOCATION,
+          Manifest.permission.ACCESS_FINE_LOCATION
+  };
+
+  /**
+   * 检查是否已经授予位置权限
+   *
+   * @return
+   */
+  private boolean checkLocationPermission() {
+    for (String permission : NEEDED_PERMISSIONS) {
+      if (ActivityCompat.checkSelfPermission(context, permission)
+              != PackageManager.PERMISSION_GRANTED) {
+        return false;
       }
     }
     return true;
