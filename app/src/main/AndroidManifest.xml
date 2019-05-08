@@ -72,16 +72,5 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             />
-
-        <activity
-            android:name=".ui.activity.WifiActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
-        <activity
-            android:name=".ui.activity.test.GuideActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
     </application>
 </manifest>

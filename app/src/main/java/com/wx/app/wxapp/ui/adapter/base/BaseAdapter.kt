@@ -1,4 +1,4 @@
-package com.wx.app.wxapp.ui.adapter
+package com.wx.app.wxapp.ui.adapter.base
 
 import android.support.v7.widget.RecyclerView
 

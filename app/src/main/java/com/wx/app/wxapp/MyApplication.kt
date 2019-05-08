@@ -25,8 +25,10 @@ class MyApplication : MultiDexApplication() {
     }
 
     override fun onCreate() {
+        Thread.sleep(2000)
         super.onCreate()
         context = applicationContext
+
     }
 
     override fun attachBaseContext(base: Context) {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#64B6D1</color>
+    <color name="colorPrimary">#FF24E290</color>
     <color name="colorPrimaryDark">#F68E54</color>
     <color name="colorAccent">#FF4081</color>
     <color name="windowBackground">@android:color/white</color>
@@ -31,4 +31,6 @@
     <color name="wifi_txt_line">#3A3F4F</color>
 
     <color name="txt_load_more">#64B6D1</color>
+
+    <color name="transparent">#00000000</color>
 </resources>

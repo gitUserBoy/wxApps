@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/bg_search"
+    >
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/icon_search"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/dp_8"
+        android:layout_marginRight="@dimen/dp_4"
+        />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:text="搜索天气 单词 小说"
+        android:textSize="@dimen/dp_17"
+        android:layout_gravity="center_vertical"
+        />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="@dimen/dp_8"
+        android:src="@drawable/icon_im_voice"
+        android:layout_gravity="center_vertical"
+        />
+</LinearLayout>

@@ -30,9 +30,10 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
-    <style name="AppTheme.NoBar">
+    <style name="AppTheme.NoBar" parent="Theme.AppCompat.Light">
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@drawable/header_bg</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
